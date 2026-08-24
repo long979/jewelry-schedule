@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>小爱珠宝阁 · 拍摄行程</title>
+<style>
+  :root { --rose:#c98a6d; --rose-d:#b0705a; --gold:#d8a85c; --bg:#fff4ee; --card:#ffffff; --ink:#5a4a42; --soft:#a08f85; }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body { font-family:"PingFang SC","Microsoft YaHei",sans-serif; background:var(--bg); color:var(--ink); padding-bottom:88px; }
+  /* ===== 封面区 ===== */
+  .hero { position:relative; overflow:hidden; padding:34px 20px 52px; text-align:center; color:#fff;
+    background:linear-gradient(160deg,#e8b4a0 0%,#d89a86 38%,#c98f5f 100%); }
+  .hero .spark { position:absolute; font-size:20px; opacity:.5; animation:tw 3s ease-in-out infinite; }
+  .hero .s1 { top:18px; left:18px; } .hero .s2 { top:30px; right:26px; animation-delay:1s; }
+  .hero .s3 { bottom:20px; left:40%; animation-delay:2s; }
+  @keyframes tw { 0%,100%{opacity:.2;} 50%{opacity:.8;} }
+  .hero img.cover { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0; }
+  .hero .hero-in { position:relative; z-index:1; }
+  .hero .orn { font-size:14px; letter-spacing:10px; opacity:.95; }
+  .hero h1 { font-size:24px; font-weight:700; letter-spacing:5px; margin-top:8px; text-shadow:0 2px 10px rgba(0,0,0,.15); }
+  .hero .sub { font-size:11px; opacity:.92; margin-top:8px; letter-spacing:3px; }
+  .hero .hero-line { width:70px; height:2px; margin:14px auto 0; background:rgba(255,255,255,.7); border-radius:2px; }
+  /* ===== 今日 + 倒计时 ===== */
+  .today { background:var(--card); border-radius:16px; margin:-24px 16px 6px; padding:13px 16px; position:relative; z-index:2;
+    box-shadow:0 8px 20px rgba(184,112,84,.18); }
+  .today .row { display:flex; justify-content:space-between; align-items:center; }
+  .today .lbl { font-size:11px; color:var(--rose); }
+  .today .main { font-size:16px; font-weight:700; margin-top:2px; }
+  .today .date { font-size:12px; color:var(--soft); }
+  .countdown { margin:0 16px 6px; font-size:12px; color:var(--rose-d); text-align:center; background:#fdeee4; border-radius:12px; padding:8px 10px; }
+  .countdown b { color:var(--rose-d); }
+  /* ===== 标签栏 ===== */
+  .tabs { position:fixed; left:0; right:0; bottom:0; background:#fff; border-top:1px solid #f4e4db; display:flex; padding-bottom:env(safe-area-inset-bottom); z-index:10; }
+  .tab { flex:1; text-align:center; padding:9px 0 8px; font-size:11px; color:var(--soft); background:none; border:none; cursor:pointer; }
+  .tab .ico { font-size:18px; display:block; margin-bottom:3px; }
+  .tab.active { color:var(--rose-d); font-weight:700; }
+  .tab.active::before { content:""; position:absolute; top:0; left:35%; right:35%; height:3px; background:linear-gradient(90deg,var(--rose),var(--gold)); border-radius:0 0 3px 3px; }
+  .panel { display:none; padding:16px; } .panel.active { display:block; }
+  .stitle { font-size:14px; font-weight:700; color:var(--rose-d); margin:6px 4px 14px; }
+  .card { background:var(--card); border-radius:18px; padding:15px; margin-bottom:12px; box-shadow:0 4px 14px rgba(184,112,84,.12); }
+  .card.today-mark { border:2px solid var(--gold); box-shadow:0 6px 20px rgba(216,168,92,.25); }
+  .card.done-card { opacity:.55; }
+  .chip { display:inline-block; font-size:11px; color:#fff; background:linear-gradient(90deg,var(--rose),var(--gold)); border-radius:20px; padding:3px 12px; }
+  .chip.today { background:linear-gradient(90deg,#e08a3c,#d8a85c); font-weight:700; }
+  .shead { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .shead .t { font-size:15px; font-weight:700; flex:1; }
+  .btn-done { border:1px solid var(--rose); color:var(--rose); background:none; font-size:11px; padding:4px 12px; border-radius:20px; cursor:pointer; white-space:nowrap; }
+  .btn-done.finished { background:var(--rose); color:#fff; border-color:var(--rose); }
+  .stime { font-size:12px; color:var(--rose); margin-top:6px; }
+  .sd { font-size:12px; color:var(--soft); margin-top:8px; line-height:1.7; }
+  .prep { margin-top:12px; background:#fff9f5; border-radius:12px; padding:10px 12px; }
+  .prep .p-title { font-size:12px; font-weight:700; color:var(--rose-d); margin-bottom:7px; }
+  .prep-item { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--ink); padding:4px 0; cursor:pointer; }
+  .prep-item input { width:18px; height:18px; accent-color:var(--rose); flex-shrink:0; }
+  .prep-item.checked { color:var(--soft); text-decoration:line-through; }
+  .progress { font-size:11px; color:var(--soft); margin-top:6px; }
+  .th { display:flex; align-items:center; gap:12px; }
+  .th .ic { width:46px; height:46px; border-radius:50%; background:linear-gradient(135deg,#f6d9c9,#f0e2b6); display:flex; align-items:center; justify-content:center; font-size:21px; flex-shrink:0; }
+  .th .name { font-size:15px; font-weight:700; }
+  .th .meta { font-size:11px; color:var(--soft); margin-top:4px; }
+  .scrip { background:#fff9f5; border-radius:12px; padding:11px 13px; margin-top:11px; }
+  .scrip .st { font-size:12px; font-weight:700; color:var(--rose-d); margin-bottom:5px; }
+  .scrip li { font-size:12px; color:var(--soft); line-height:1.9; margin-left:16px; }
+  .btn-nav { display:inline-block; margin-top:10px; margin-right:8px; font-size:12px; color:#fff; background:linear-gradient(90deg,#e08a3c,#c9a050); border-radius:20px; padding:6px 14px; text-decoration:none; }
+  .btn-tel { display:inline-block; margin-top:10px; font-size:12px; color:var(--rose-d); background:#fdeee4; border-radius:20px; padding:6px 14px; text-decoration:none; }
+  .empty { text-align:center; color:#d0bfb4; font-size:12px; margin:30px 0; }
+</style>
+</head>
+<body>
+
+<!-- 封面区：如果设置了 HERO_IMAGE 就显示图片，否则显示渐变装饰 -->
+<div class="hero" id="hero">
+  <div class="spark s1">✦</div><div class="spark s2">✦</div><div class="spark s3">✦</div>
+  <div class="hero-in">
+    <div class="orn">◆ ✦ ◆</div>
+    <h1>小爱珠宝阁</h1>
+    <div class="sub">SHOOTING SCHEDULE</div>
+    <div class="hero-line"></div>
+  </div>
+</div>
+
+<div class="today">
+  <div class="row">
+    <div><div class="lbl">今日行程</div><div class="main" id="todayMain">—</div></div>
+    <div class="date" id="todayDate"></div>
+  </div>
+</div>
+<div class="countdown" id="countdown"></div>
+
+<div class="panel active" id="p-schedule"><div class="stitle">每日拍摄安排</div><div id="scheduleList"></div></div>
+<div class="panel" id="p-theme"><div class="stitle">拍摄主题</div><div id="themeList"></div></div>
+<div class="panel" id="p-script"><div class="stitle">拍摄脚本</div><div id="scriptList"></div></div>
+<div class="panel" id="p-pickup"><div class="stitle">拿货时间</div><div id="pickupList"></div></div>
+<div class="panel" id="p-style"><div class="stitle">主播装扮参考</div><div id="styleList"></div></div>
+
+<div class="tabs">
+  <button class="tab active" data-tab="schedule"><span class="ico">📅</span>行程</button>
+  <button class="tab" data-tab="theme"><span class="ico">💎</span>主题</button>
+  <button class="tab" data-tab="script"><span class="ico">🎬</span>脚本</button>
+  <button class="tab" data-tab="pickup"><span class="ico">📦</span>拿货</button>
+  <button class="tab" data-tab="style"><span class="ico">👗</span>装扮</button>
+</div>
+
+<script>
+// ===== 封面图：想要真图就把这里换成图片网址（如 /photo.jpg）=====
+var HERO_IMAGE = "";
+
+// ===== 数据（换成你的真实内容）=====
+var DATA = {
+  schedule:[
+    {date:"8月24日",day:"周一",time:"下午3点",title:"市场拍摄《小爱同学，我在》",detail:"帮姐妹找x万预算正阳绿葫芦 · 市场寻货",prep:["相机","收音设备","灯光"]},
+    {date:"8月27日",day:"周四",time:"下午3点",title:"好物分享 + 一条口播",detail:"好物分享：颜色的高货珠链",prep:["相机","收音设备","灯光"]}
+  ],
+  themes:[
+    {icon:"🎬",name:"《小爱同学，我在》",tag:"市场拍摄",items:["帮姐妹找货","按需求寻宝","市场验货"]},
+    {icon:"📿",name:"高货珠链",tag:"好物分享",items:["颜色高货","精选珠链","日常百搭"]}
+  ],
+  scripts:[
+    {theme:"8月24日 · 市场拍摄《小爱同学，我在》",scenes:[
+      {title:"开场",shot:"市场入口、小爱走进市场、档口环境",talk:[
+        "小爱的各位姐妹们，大家好。今天我们开启一个新的系列：《小爱同学，我在》。",
+        "最近很多姐妹都会在客服或者私信留言，想找一些自己喜欢，但是市场上又不好找的翡翠精品。",
+        "所以从今天开始，小爱决定亲自走进市场，根据姐妹们的真实需求，帮大家一件一件去找货。",
+        "你可以告诉我：想找什么题材，什么尺寸，预算是多少。我会尽我的能力，帮你找到符合你需求的翡翠。",
+        "不会让姐妹花了钱，最后买到不符合自己预期的东西。好了，废话不多说。我们来看今天第一位姐妹的需求。"
+      ]},
+      {title:"客户需求",shot:"市场走动，需求字幕",talk:[
+        "今天这位姐妹想找一件：x万左右的正阳绿葫芦吊坠。",
+        "她的需求其实很明确：喜欢绿色，希望颜色漂亮、有存在感。而且非常百搭。",
+        "所以今天我们的目标就是：在x万左右的预算里，看看市场上有没有颜色、品质、佩戴感都比较好的精品葫芦。",
+        "我们直接去市场看看。"
+      ]},
+      {title:"第一件货 · 品质不达要求（建立标准）",shot:"拿灯观察",talk:[
+        "这件第一眼看过去，颜色确实比较吸引人。绿色出来了，题材也符合。但是我们帮姐妹找货，不能只看第一眼。",
+        "大家看一下，它的问题主要在哪里。颜色虽然有，但是整体的种水没有很好地把这个颜色托起来。",
+        "所以视觉上会觉得颜色不错，但是距离精品翡翠光感还有一点差距。所以这件我们先不确定，继续看看市场里有没有光感更好的。"
+      ]},
+      {title:"第二件货 · 品质高但不符合需求（展示标准）",shot:"老板拿第二件",talk:[
+        "这一件我们明显能感觉到，整体状态提升了。它的种水、细腻度，包括整体干净程度，都会更舒服。",
+        "这种状态其实已经属于很多姐妹喜欢的精品。如果是喜欢收藏，或者喜欢品质感更强的姐妹，这一件会很适合。",
+        "但是回到今天这位姐妹的需求。她希望的是一件：日常可以佩戴，能够融入生活的正阳绿葫芦。（题材不对或者风格不对）",
+        "所以我们还需要继续看看，有没有在需求和品质之间更平衡的。"
+      ]},
+      {title:"第三件货 · 品质达标但超预算（建立价格认知）",shot:"老板拿出第三件",talk:[
+        "这一件其实已经非常接近我们的目标了。颜色、种水、题材，基本都符合我们的要求。",
+        "大家可以看一下，为什么它的价格会更高？因为翡翠不是只有一个颜色。",
+        "同样是绿色，颜色的表现、种水的支撑、尺寸大小、整体完整度，都会影响它最后的价值。",
+        "所以市场里真正状态好的翡翠，价格一定会体现它的稀缺性。但是看一下价格。",
+        "（老板报价）这个已经超过了客户原本的预算。这一件我们认可它的价值，但是超预算，或者看不到价格。"
+      ]},
+      {title:"第四件货 · 符合客户需求（最终选择）",shot:"找到最终货，上手效果",talk:[
+        "这个方向就比较接近我们今天想找的了。大家可以看一下。",
+        "它首先满足客户想要的绿色。颜色有表现力，但是又不会过于张扬。同时整体品质也能够支撑它作为一件小精品。",
+        "最重要的是，它符合客户最开始告诉我的需求：可以买回来，也愿意经常戴。（和老板沟通）"
+      ]},
+      {title:"结尾",shot:"",talk:[
+        "其实每一次帮姐妹找货，小爱想解决的都不只是：买到一件翡翠。",
+        "因为对于很多女生来说，一件珠宝背后，代表的是一个重要的场景，或者是人生某个值得纪念的时刻。",
+        "我们希望做的，就是让姐妹们购买翡翠这件事情，变得简单一点。不用花大量时间去试错，不用面对复杂的市场不知道怎么选择。",
+        "用更合理的预算，找到真正适合自己的那一件，让翡翠给生活带来的，不仅是一件珠宝，还有更多美好的体验和情绪价值。"
+      ]}
+    ]},
+    {theme:"8月27日 · 翡翠口播（1版）",scenes:[
+      {title:"口播正文",talk:[
+        "翡翠正在成为新一代人的审美选择",
+        "翡翠的变化，不是年轻化。而是大家开始重新发现：它不仅代表财富，更代表一种独特的东方审美。",
+        "以前提到翡翠，很多人的第一印象：长辈珠宝、收藏品、传统饰品。但现在你会发现：越来越多年轻设计师、时尚造型、年轻女性，开始重新关注翡翠。为什么？",
+        "过去看翡翠关注的是：贵不贵、价值多少、有没有收藏意义，更多看到的是：财富属性。",
+        "但是现在越来越多人关注：颜色的美感、天然形成的纹理、和服饰搭配的表达，开始看到：翡翠本身的审美价值。",
+        "现代工业：大量复制标准化产品。但翡翠：每一件都有自己的颜色和纹理。它满足现代人对于：独特、不可复制的追求。",
+        "翡翠的美：不是强烈张扬。而是：温润、克制、含蓄。这种审美越来越符合成熟女性对于高级感的理解。",
+        "而且翡翠不只是：旗袍、礼服、收藏柜。现在可以搭配：白衬衫、西装、新中式、日常穿搭，成为个人风格的一部分。",
+        "翡翠不仅仅只是简单的财富象征。它是一种自我的审美表达。选择翡翠，不是为了复制别人眼里的高级。而是找到符合自己的美。",
+        "有生命力的传统，不是停留在过去。而是进入今天的生活。翡翠不是重新流行。而是被重新理解。"
+      ]}
+    ]},
+    {theme:"8月27日 · 翡翠口播（2版）",scenes:[
+      {title:"口播正文",talk:[
+        "翡翠正在成为新一代人的审美选择",
+        "如果关注时尚圈的姐姐们应该能发现，最近无论时尚杂志还是一些秀场，关于翡翠的设计越来越多。",
+        "翡翠曾经被认为：属于长辈，属于收藏，属于财富象征。但今天，越来越多女性开始重新选择翡翠。",
+        "不是因为翡翠变了。而是我们的审美变了。",
+        "这个时代，最不缺的是复制。复制的设计，复制的潮流，复制的审美。但翡翠不一样。",
+        "每一道颜色，每一丝纹理，每一片飘花，都是无法复制的存在。",
+        "所以真正懂翡翠的人，看的从来不是：它够不够迎合大众。而是：它有没有自己的灵魂。",
+        "我们不追逐短暂的流行，也不寻找所有人都认可的答案。因为真正成熟的审美，不是跟随标准。而是建立自己的标准。",
+        "我们相信，一件翡翠的价值，是它是否留下了最好的部分。所以我们坚持精品。",
+        "因为“小”，不是价值的限制。而是一种选择。是在有限之中，留下无限可能。",
+        "小小的尺寸，也可以拥有大大的力量。就像很多女性一样。",
+        "她不需要用夸张证明自己，不需要用外在定义自己。她经历时间，拥有故事，也拥有属于自己的判断。",
+        "今天的翡翠，不应该只存在于收藏柜里。它可以出现在日常，出现在每一个重要时刻。",
+        "因为真正有生命力的传统，从来不是停留在过去。而是进入今天的生活。",
+        "翡翠不是重新流行。而是被重新理解。",
+        "它不只是财富的象征，更是一种属于东方女性的审美表达。"
+      ]}
+    ]}
+  ],
+  pickup:[
+    {date:"8月25日",from:"珠链档口",items:"颜色的高货珠链（27号好物分享用）",note:"拍摄前两天去选 · 提前联系档口",phone:""}
+  ],
+  style:[
+    {icon:"🎬",day:"8月24日 · 市场拍摄装扮",items:[
+      "上衣：简约休闲，方便在市场里走动、举货看货",
+      "颜色：清爽浅色或中性色，别和杂乱的档口背景撞色",
+      "鞋：好走路的平底鞋，市场要逛一整天",
+      "手部：方便拿货验货，长袖可挽起",
+      "包：斜挎小包，放手机、记录本、便携设备",
+      "光线：市场光源杂，尽量在档口灯下正面拍摄"
+    ]},
+    {icon:"🎙️",day:"8月27日 · 口播拍摄装扮（暖色场景）",items:[
+      "拍摄场景偏暖：衣服避开大面积暖黄/橘/粉，避免和背景融为一体",
+      "首选：冷调白、米白、浅灰衬衫或新中式，衬托翡翠的绿",
+      "或选：深色（藏青/黑）更有高级感，和暖背景形成对比",
+      "发型：干净利落，低盘发或自然披肩",
+      "妆容：淡雅自然、显气色，眼妆淡，唇色豆沙或裸色",
+      "首饰：主角是翡翠吊坠/耳钉，其他金饰尽量少戴",
+      "光线：正面偏侧光，脸要亮堂，翡翠在光下才有水头"
+    ]}
+  ]
+};
+
+// ===== 工具 =====
+function keyDone(item){ return "v3done-" + item.date + "-" + item.title; }
+function keyPrep(item, i){ return "v3prep-" + item.date + "-" + item.title + "-" + i; }
+function isDone(item){ return localStorage.getItem(keyDone(item)) === "1"; }
+function setDone(item, v){ localStorage.setItem(keyDone(item), v ? "1" : "0"); }
+function isPrep(item, i){ return localStorage.getItem(keyPrep(item, i)) === "1"; }
+function setPrep(item, i, v){ localStorage.setItem(keyPrep(item, i), v ? "1" : "0"); }
+function parseDate(str){ var m = str.match(/(\d{1,2})月(\d{1,2})日/); if(!m) return null; return new Date(new Date().getFullYear(), parseInt(m[1])-1, parseInt(m[2])); }
+function todayStr(){ var n = new Date(); return (n.getMonth()+1) + "月" + n.getDate() + "日"; }
+function daysBetween(a, b){ return Math.round((b - a) / 86400000); }
+
+// ===== 封面 =====
+if (HERO_IMAGE) {
+  var img = document.createElement("img");
+  img.className = "cover"; img.src = HERO_IMAGE;
+  document.getElementById("hero").appendChild(img);
+}
+
+// ===== 今日 + 倒计时 =====
+function renderToday() {
+  var now = new Date();
+  var md = todayStr();
+  document.getElementById("todayDate").textContent = md + " " + ["周日","周一","周二","周三","周四","周五","周六"][now.getDay()];
+  var hit = DATA.schedule.find(function(s){ return s.date === md; });
+  document.getElementById("todayMain").textContent = hit ? hit.title : "今日暂无安排";
+
+  var all = DATA.schedule.concat(DATA.pickup.map(function(p){ return {date:p.date,title:"拿货："+p.from}; }));
+  var next = all.filter(function(x){ var d = parseDate(x.date); return d && d > now; })
+    .sort(function(a,b){ return parseDate(a.date) - parseDate(b.date); })[0];
+  var cd = document.getElementById("countdown");
+  if (next) {
+    var n = daysBetween(now, parseDate(next.date));
+    cd.innerHTML = n === 0 ? "⏰ <b>今天</b> · " + next.title : "⏰ 距 <b>" + next.date + "</b> " + next.title + " 还有 <b>" + n + " 天</b>";
+  } else {
+    cd.innerHTML = "本月暂无更多安排";
+  }
+}
+
+// ===== 行程 =====
+function rD() {
+  var el = document.getElementById('scheduleList');
+  if (!DATA.schedule.length) { el.innerHTML = '<div class="empty">暂无安排</div>'; return; }
+  el.innerHTML = DATA.schedule.map(function(s, idx){
+    var isT = s.date === todayStr();
+    var done = isDone(s);
+    var checked = s.prep ? s.prep.filter(function(_, i){ return isPrep(s, i); }).length : 0;
+    var total = s.prep ? s.prep.length : 0;
+    var prepHtml = s.prep ? '<div class="prep"><div class="p-title">📋 准备清单</div>' +
+      s.prep.map(function(p, i){
+        var c = isPrep(s, i);
+        return '<label class="prep-item' + (c ? ' checked' : '') + '"><input type="checkbox"' + (c ? ' checked' : '') + ' onchange="togglePrep(' + idx + ',' + i + ')">' + p + '</label>';
+      }).join('') +
+      '<div class="progress">已完成 ' + checked + ' / ' + total + '</div></div>' : '';
+    return '<div class="card' + (isT ? ' today-mark' : '') + (done ? ' done-card' : '') + '">' +
+      '<div class="shead">' +
+        '<span class="chip' + (isT ? ' today' : '') + '">' + s.date + ' ' + s.day + '</span>' +
+        '<span class="stime">' + s.time + '</span>' +
+      '</div>' +
+      '<div style="margin-top:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">' +
+        '<div style="flex:1;"><div class="t" style="font-size:15px;font-weight:700;">' + s.title + '</div>' +
+        '<div class="sd">' + s.detail + '</div></div>' +
+        '<button class="btn-done' + (done ? ' finished' : '') + '" onclick="toggleDone(' + idx + ')">' + (done ? '✓ 已完成' : '标记完成') + '</button>' +
+      '</div>' + prepHtml + '</div>';
+  }).join('');
+}
+function toggleDone(idx){
+  var s = DATA.schedule[idx];
+  setDone(s, !isDone(s));
+  rD();
+}
+function togglePrep(idx, i){
+  var s = DATA.schedule[idx];
+  setPrep(s, i, !isPrep(s, i));
+  rD();
+}
+
+// ===== 主题 =====
+function rT() {
+  var el = document.getElementById('themeList');
+  if (!DATA.themes.length) { el.innerHTML = '<div class="empty">暂无主题</div>'; return; }
+  el.innerHTML = DATA.themes.map(function(t){
+    return '<div class="card"><div class="th"><div class="ic">' + t.icon + '</div>' +
+      '<div style="flex:1"><div class="name">' + t.name + '</div><div class="meta">' + t.items.join(' · ') + '</div></div>' +
+      '<span class="chip">' + t.tag + '</span></div></div>';
+  }).join('');
+}
+
+// ===== 脚本 =====
+function rS() {
+  var el = document.getElementById('scriptList');
+  if (!DATA.scripts.length) { el.innerHTML = '<div class="empty">暂无脚本</div>'; return; }
+  el.innerHTML = DATA.scripts.map(function(sc){
+    return '<div class="card"><div class="t" style="font-size:15px;font-weight:700;">' + sc.theme + '</div>' +
+      sc.scenes.map(function(x){
+        var html = '<div class="scrip"><div class="st">' + x.title + '</div>';
+        if (x.shot) { html += '<div style="font-size:11px;color:#e08a3c;margin:4px 0;background:#fdeee4;border-radius:6px;padding:5px 8px;">🎥 画面：' + x.shot + '</div>'; }
+        html += '<div style="font-size:12px;font-weight:700;color:var(--rose-d);margin-bottom:4px;">🎙️ 主播</div>';
+        html += x.talk.map(function(t){ return '<li>' + t + '</li>'; }).join('');
+        return html + '</div>';
+      }).join('') + '</div>';
+  }).join('');
+}
+
+// ===== 拿货 =====
+function rP() {
+  var el = document.getElementById('pickupList');
+  if (!DATA.pickup.length) { el.innerHTML = '<div class="empty">暂无拿货安排</div>'; return; }
+  el.innerHTML = DATA.pickup.map(function(p){
+    var nav = '<a class="btn-nav" href="https://uri.amap.com/search?keyword=' + encodeURIComponent(p.from) + '" target="_blank">🧭 导航去</a>';
+    var tel = p.phone ? '<a class="btn-tel" href="tel:' + p.phone + '">📞 ' + p.phone + '</a>' : '';
+    return '<div class="card"><div class="shead"><span class="chip">' + p.date + ' 拿货</span></div>' +
+      '<div style="margin-top:10px;"><div class="t" style="font-size:15px;font-weight:700;">' + p.from + '</div>' +
+      '<div class="sd">货品：' + p.items + '</div>' +
+      '<div class="sd" style="color:var(--rose-d);">备注：' + p.note + '</div>' +
+      '<div>' + nav + tel + '</div></div></div>';
+  }).join('');
+}
+
+// ===== 装扮 =====
+function rY() {
+  var el = document.getElementById('styleList');
+  if (!DATA.style || !DATA.style.length) { el.innerHTML = '<div class="empty">暂无装扮参考</div>'; return; }
+  el.innerHTML = DATA.style.map(function(s){
+    return '<div class="card"><div class="th"><div class="ic">' + s.icon + '</div>' +
+      '<div style="flex:1"><div class="name">' + s.day + '</div></div></div>' +
+      '<div style="margin-top:10px;">' + s.items.map(function(it){
+        return '<div style="font-size:12px;color:var(--soft);line-height:1.8;padding:2px 0;display:flex;gap:6px;"><span style="color:var(--rose-d);">·</span><span>' + it + '</span></div>';
+      }).join('') + '</div></div>';
+  }).join('');
+}
+
+// ===== Tab =====
+document.querySelectorAll('.tab').forEach(function(b){
+  b.addEventListener('click', function(){
+    document.querySelectorAll('.tab').forEach(function(x){ x.classList.remove('active'); });
+    document.querySelectorAll('.panel').forEach(function(x){ x.classList.remove('active'); });
+    b.classList.add('active');
+    document.getElementById('p-' + b.dataset.tab).classList.add('active');
+  });
+});
+
+rD(); rT(); rS(); rP(); rY(); renderToday();
+</script>
+</body>
+</html>
